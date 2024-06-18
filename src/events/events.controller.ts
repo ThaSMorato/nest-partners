@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -16,9 +17,13 @@ import { EventsService } from './events.service'
 export class EventsController {
   constructor(private readonly eventsService: EventsService) {}
 
+  @HttpCode(201)
   @Post()
   create(@Body() createEventDto: CreateEventDto) {
-    return this.eventsService.create(createEventDto)
+    return this.eventsService.create({
+      ...createEventDto,
+      date: new Date(createEventDto.date),
+    })
   }
 
   @Get()
@@ -28,16 +33,20 @@ export class EventsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.eventsService.findOne(+id)
+    return this.eventsService.findOne(id)
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
-    return this.eventsService.update(+id, updateEventDto)
+    return this.eventsService.update(id, {
+      ...updateEventDto,
+      date: new Date(updateEventDto.date),
+    })
   }
 
+  @HttpCode(204)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.eventsService.remove(+id)
+    return this.eventsService.remove(id)
   }
 }
