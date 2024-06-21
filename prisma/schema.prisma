@@ -33,6 +33,16 @@ enum SpotStatus {
   RESERVED
 }
 
+enum TicketKind {
+  FULL
+  HALF
+}
+
+enum TicketStatus {
+  RESERVED
+  CANCELED
+}
+
 model Spot {
   id   String @id @default(uuid())
   name String
@@ -45,5 +55,40 @@ model Spot {
   event   Event  @relation(fields: [eventId], references: [id])
   eventId String @map("event_id")
 
+  ticket Ticket?
+
+  reservationHistory ReservationHistory[]
+
   @@map("spots")
+}
+
+model Ticket {
+  id         String     @id @default(uuid())
+  email      String
+  ticketKind TicketKind
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  spot   Spot   @relation(fields: [spotId], references: [id])
+  spotId String
+
+  @@unique([spotId])
+  @@map("tickets")
+}
+
+model ReservationHistory {
+  id         String       @id @default(uuid())
+  email      String
+  ticketKind TicketKind
+  status     TicketStatus
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  spot   Spot   @relation(fields: [spotId], references: [id])
+  spotId String
+
+  @@unique([spotId])
+  @@map("reservation_histories")
 }

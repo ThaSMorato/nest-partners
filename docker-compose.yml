@@ -6,3 +6,16 @@ services:
       MYSQL_DATABASE: nest-part
     ports:
       - 3306:3306
+    volumes:
+      - ./.docker/dbdata:/var/lib/mysql
+      - ./docker/mysql:/docker-entrypoint-initdb.d
+
+  app:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/home/node/app
+      - /home/node/app/node_modules
+    environment:
+      DATABASE_URL: mysql://root:root@db:3306/nest-part
